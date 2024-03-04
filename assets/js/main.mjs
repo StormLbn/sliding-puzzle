@@ -31,8 +31,8 @@ console.log(imageUrl);
 // Generate board :
 const board = new Board(3);
 
-for (let i = 0; i < board.gameTiles.length; i++) {
-    const currentTile = board.gameTiles[i];
+for (let i = 0; i < board.gameBoard.length; i++) {
+    const currentTile = board.gameBoard[i];
 
     const imgElt = document.createElement('img');
     imgElt.setAttribute("src", imageUrl);
@@ -43,12 +43,10 @@ for (let i = 0; i < board.gameTiles.length; i++) {
     tileElt.setAttribute("class", "tile");
     tileElt.style.order = currentTile.pos;
 
-    if (currentTile.id === board.gameTiles.length - 1) {
+    if (currentTile.id === board.gameBoard.length - 1) {
         tileElt.classList.add("blank");
     }
 
     tileElt.appendChild(imgElt);
     puzzle.appendChild(tileElt);
 }
-
-console.log(board.checkVictory());
