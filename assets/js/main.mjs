@@ -10,7 +10,8 @@ let imageUrl;
 
 // HTML elements
 const puzzleElt = document.querySelector("section#puzzle");
-const fullImgElt = document.createElement('img');
+const fullImg = document.querySelector("section#full");
+let blankTileElt;
 let tilesElts;
 
 let gameBoard;
@@ -55,13 +56,6 @@ const generateBoard = (board) => {
     }
 }
 
-// Start a new game :
-const startGame = (boardSize) => {
-    const board = new Board(boardSize);
-    generateBoard(board);
-    return board;
-}
-
 // Move a tile to the blank position
 const moveTile = (tileId) => {
     const currentTile = gameBoard.getTile(tileId);
@@ -78,26 +72,46 @@ const moveTile = (tileId) => {
     }
 }
 
+// Handler for click event
+const handleTileClick = (event) => {
+    moveTile(event.currentTarget.id.slice(1));
 
+    if (gameBoard.checkVictory()) {
+        endGame();
+    }
+}
+
+// Instructions when game is completed
+const endGame = () => {
+    // TODO set victory display
+    console.log("Congratulations !");
+
+    blankTileElt.classList.remove("blank");
+
+    tilesElts.forEach(tileElt => tileElt.removeEventListener("click", handleTileClick));
+}
+
+// Start a new game :
+const startGame = (boardSize) => {
+    const board = new Board(boardSize);
+    generateBoard(board);
+    
+    tilesElts = document.querySelectorAll("div.tile:not(.blank)");
+    blankTileElt = document.querySelector("div.blank");
+
+    tilesElts.forEach(tileElt => tileElt.addEventListener("click", handleTileClick));
+    return board;
+}
 
 
 //// Main
 
+// Set image
 imageUrl = await generateImage("landscape");
 
+const fullImgElt = document.createElement('img');
 fullImgElt.setAttribute("src", imageUrl);
-document.querySelector("section#full").appendChild(fullImgElt);
+fullImg.appendChild(fullImgElt);
 
+// Launch game
 gameBoard = startGame(3);
-
-//// TODO refactor
-
-tilesElts = document.querySelectorAll("div.tile:not(.blank)");
-
-tilesElts.forEach(tileElt => tileElt.addEventListener("click", () => {
-    moveTile(tileElt.id.slice(1));
-
-    if (gameBoard.checkVictory()) {
-        console.log("victoire !");
-    }
-}));
