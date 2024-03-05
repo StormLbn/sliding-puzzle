@@ -15,10 +15,10 @@ export default class Tile {
         // Position in the list
         this.pos = pos;
 
-        // x coordinate on the board
+        // Row coordinate on the board
         this.x = Math.trunc(pos / this.boardSize);
         
-        // y coordinate on the board
+        // Column coordinate on the board
         this.y = pos % this.boardSize;
     }
     

@@ -80,11 +80,11 @@ function countInversions(boardList) {
 }
 
 // Check if the shuffled board is solvable
-function checkSolvable(board, size) {
-    let inv = countInversions(board);
+function checkSolvable(boardList, size) {
+    let inv = countInversions(boardList);
 
     // For even-sized boards, we need the row position of the "blank" tile
-    const blankTileRow = Math.trunc(board.indexOf(board.length - 1) / size);
+    const blankTileRow = Math.trunc(boardList.indexOf(boardList.length - 1) / size);
 
     if (
         // Odd-sized boards : solvable if inversions are even

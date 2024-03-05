@@ -14,6 +14,7 @@ const fullImgElt = document.createElement('img');
 let tilesElts;
 
 let gameBoard;
+let victory = false;
 
 
 //// Functions
@@ -31,6 +32,7 @@ const generateImage = async (keyword) => {
 
 // Generate board :
 const generateBoard = (board) => {
+    puzzleElt.innerHTML = "";
 
     for (let i = 0; i < board.gameTiles.length; i++) {
         const currentTile = board.gameTiles[i];
@@ -56,12 +58,27 @@ const generateBoard = (board) => {
 // Start a new game :
 const startGame = (boardSize) => {
     const board = new Board(boardSize);
-
     generateBoard(board);
-    console.log(board.gameTiles);
-
     return board;
 }
+
+// Move a tile to the blank position
+const moveTile = (tileId) => {
+    const currentTile = gameBoard.getTile(tileId);
+
+    if (gameBoard.checkNextToBlank(currentTile)) {
+        const blankTile = gameBoard.getTile(gameBoard.lastId);
+        const tilePos = currentTile.pos;
+
+        currentTile.setPosition(blankTile.pos);
+        blankTile.setPosition(tilePos);
+
+        document.querySelector("div#t" + currentTile.id).style.order = currentTile.pos;
+        document.querySelector("div#t" + blankTile.id).style.order = blankTile.pos;
+    }
+}
+
+
 
 
 //// Main
@@ -78,19 +95,9 @@ gameBoard = startGame(3);
 tilesElts = document.querySelectorAll("div.tile:not(.blank)");
 
 tilesElts.forEach(tileElt => tileElt.addEventListener("click", () => {
-    const id = tileElt.id.slice(1);
-    console.log("Tile ID = " + id);
+    moveTile(tileElt.id.slice(1));
 
-    console.log("Game board :");
-    console.log(gameBoard.gameTiles);
-
-    const currentTile = gameBoard.getTile(id);
-    console.log("Current tile :");
-    console.log(currentTile);
-
-    const blankTile = gameBoard.getTile(gameBoard.lastId);
-    console.log("Blank tile :");
-    console.log(blankTile);
-
-    console.log("Current and blank tile next to each other : " + gameBoard.checkNextToBlank(currentTile));
+    if (gameBoard.checkVictory()) {
+        console.log("victoire !");
+    }
 }));
