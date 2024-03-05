@@ -4,23 +4,24 @@ import Board from "./Board.js";
 
 // Image generation
 const errorImage = "https://images.unsplash.com/source-404?fit=crop&fm=jpg&h=800&q=60&w=1200";
-const defaultImage = "assets/not-found.jpg"
-const apiBaseUrl = "https://source.unsplash.com/random/600x600/?"
+const defaultImage = "assets/not-found.jpg";
+const apiBaseUrl = "https://source.unsplash.com/random/600x600/?";
 let imageUrl;
 
 // HTML elements
-const puzzle = document.querySelector("section#puzzle");
-const fullImgElt = document.createElement('img')
+const puzzleElt = document.querySelector("section#puzzle");
+const fullImgElt = document.createElement('img');
+let tilesElts;
 
-let board;
+let gameBoard;
 
 
 //// Functions
 
 // Generate picture from Unsplash :
-const generateImage = async () => {
+const generateImage = async (keyword) => {
     try {
-        const response = await fetch(apiBaseUrl + "landscape");
+        const response = await fetch(apiBaseUrl + keyword);
 
         return response.url === errorImage ? defaultImage : response.url;
     } catch (error) {
@@ -31,8 +32,8 @@ const generateImage = async () => {
 // Generate board :
 const generateBoard = (board) => {
 
-    for (let i = 0; i < board.gameBoard.length; i++) {
-        const currentTile = board.gameBoard[i];
+    for (let i = 0; i < board.gameTiles.length; i++) {
+        const currentTile = board.gameTiles[i];
 
         const imgElt = document.createElement('img');
         imgElt.setAttribute("src", imageUrl);
@@ -43,22 +44,53 @@ const generateBoard = (board) => {
         tileElt.setAttribute("class", "tile");
         tileElt.style.order = currentTile.pos;
 
-        if (currentTile.id === board.gameBoard.length - 1) {
+        if (currentTile.id === board.lastId) {
             tileElt.classList.add("blank");
         }
 
         tileElt.appendChild(imgElt);
-        puzzle.appendChild(tileElt);
+        puzzleElt.appendChild(tileElt);
     }
+}
+
+// Start a new game :
+const startGame = (boardSize) => {
+    const board = new Board(boardSize);
+
+    generateBoard(board);
+    console.log(board.gameTiles);
+
+    return board;
 }
 
 
 //// Main
 
-imageUrl = await generateImage();
+imageUrl = await generateImage("landscape");
 
 fullImgElt.setAttribute("src", imageUrl);
 document.querySelector("section#full").appendChild(fullImgElt);
 
-board = new Board(3);
-generateBoard(board);
+gameBoard = startGame(3);
+
+//// TODO refactor
+
+tilesElts = document.querySelectorAll("div.tile:not(.blank)");
+
+tilesElts.forEach(tileElt => tileElt.addEventListener("click", () => {
+    const id = tileElt.id.slice(1);
+    console.log("Tile ID = " + id);
+
+    console.log("Game board :");
+    console.log(gameBoard.gameTiles);
+
+    const currentTile = gameBoard.getTile(id);
+    console.log("Current tile :");
+    console.log(currentTile);
+
+    const blankTile = gameBoard.getTile(gameBoard.lastId);
+    console.log("Blank tile :");
+    console.log(blankTile);
+
+    console.log("Current and blank tile next to each other : " + gameBoard.checkNextToBlank(currentTile));
+}));

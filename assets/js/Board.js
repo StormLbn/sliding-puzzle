@@ -4,9 +4,13 @@ export default class Board {
     constructor(size) {
         // Number of rows or columns of the board (size * size board)
         this.size = size;
+        
+        // ID of the last tile
+        this.lastId = size * size - 1;
 
         // List of game tiles, with position & coordinates
-        this.gameBoard = this.initBoard();
+        this.gameTiles = this.initBoard();
+    
     }
 
     // Create the (solved) board with the right size
@@ -93,9 +97,20 @@ export default class Board {
         return tiles;
     }
 
+    // Get a tile from the list by its ID
+    getTile(id) {
+        const tile = this.gameTiles.find(tile => tile.id == id);
+        return tile;
+    }
+
+    // Check if the current tile is next to the blank tile
+    checkNextToBlank(tile) {
+        return tile.checkNeighbors(this.getTile(this.lastId));
+    }
+
     // Check if the game is completed
     checkVictory() {
-        for (const tile of this.gameBoard) {
+        for (const tile of this.gameTiles) {
             // If any tile is at the wrong place, then the board isn't completed
             if (tile.pos !== tile.id) {
                 return false;

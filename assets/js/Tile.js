@@ -28,4 +28,16 @@ export default class Tile {
         this.y = y;
         this.pos = x * this.boardSize + y;
     }
+
+    // Check if the current tile is next to the one in parameter
+    checkNeighbors(otherTile) {
+        if (
+            (this.x === otherTile.x && (this.y === otherTile.y + 1 || this.y === otherTile.y - 1))
+            || (this.y === otherTile.y && (this.x === otherTile.x + 1 || this.x === otherTile.x - 1))
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
