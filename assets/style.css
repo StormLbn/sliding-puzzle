@@ -3,17 +3,41 @@ body * {
     padding: 0;
 }
 
+p {
+    color: darkred;
+    font-size: 1.5rem;
+    font-style: italic;
+    padding-bottom: 2.5rem;
+}
+
 #puzzle {
     display: grid;
     grid-template-rows: repeat(3, 200px);
     grid-template-columns: repeat(3, 200px);
-    gap: 3px;
+    gap: 2px;
 }
 
-.tile > img {
-    height: 100%;
-    width: 100%;
-    object-fit: none;
+.tile {
+    position: relative;
+
+    > img {
+        height: 100%;
+        width: 100%;
+        object-fit: none;
+    }
+
+    > span {
+        position: absolute;
+        top: 0;
+        right: 0;
+        
+        padding: 0.5rem 0.5rem 0.8rem 0.8rem;
+        background-color: rgba(255, 255, 255, 0.7);
+
+        font-family: monospace;
+        font-size: 1.2rem;
+        border-radius: 0 0 0 100px;
+    }
 }
 
 .blank > img {

@@ -11,11 +11,10 @@ let imageUrl;
 // HTML elements
 const puzzleElt = document.querySelector("section#puzzle");
 const fullImg = document.querySelector("section#full");
+let tilesElts = [];
 let blankTileElt;
-let tilesElts;
 
 let gameBoard;
-let victory = false;
 
 
 //// Functions
@@ -28,6 +27,60 @@ const generateImage = async (keyword) => {
         return response.url === errorImage ? defaultImage : response.url;
     } catch (error) {
         console.log(error);
+    }
+}
+
+// Move a tile to the blank position
+const moveTile = (tileId) => {
+    const currentTile = gameBoard.getTile(tileId);
+
+    if (gameBoard.checkNextToBlank(currentTile)) {
+        const blankTile = gameBoard.getTile(gameBoard.lastId);
+        const tilePos = currentTile.pos;
+
+        currentTile.setPosition(blankTile.pos);
+        blankTile.setPosition(tilePos);
+
+        document.querySelector("div#t" + currentTile.id).style.order = currentTile.pos;
+        document.querySelector("div#t" + blankTile.id).style.order = blankTile.pos;
+    }
+}
+
+// Instructions when game is completed
+const endGame = () => {
+    // TODO set victory display
+    console.log("Congratulations !");
+
+    blankTileElt.classList.remove("blank");
+    hideOrder();
+
+    tilesElts.forEach(tileElt => tileElt.removeEventListener("click", handleTileClick));
+}
+
+// Handler for click event
+const handleTileClick = (event) => {
+    moveTile(event.currentTarget.id.slice(1));
+
+    if (gameBoard.checkVictory()) {
+        endGame();
+    }
+}
+
+// Add numbers on tiles
+const showOrder = () => {
+    for (let tileElt of tilesElts) {
+        const spanElt = document.createElement('span');
+        spanElt.innerText = +tileElt.id.slice(1) + 1;
+        
+        tileElt.appendChild(spanElt);
+    }
+}
+
+// Remove numbers on tiles
+const hideOrder = () => {
+    for (let tileElt of tilesElts) {
+        const spanElt = document.querySelector("div.tile>span");
+        tileElt.removeChild(spanElt);
     }
 }
 
@@ -49,6 +102,9 @@ const generateBoard = (board) => {
 
         if (currentTile.id === board.lastId) {
             tileElt.classList.add("blank");
+            blankTileElt = tileElt;
+        } else {
+            tilesElts.push(tileElt);
         }
 
         tileElt.appendChild(imgElt);
@@ -56,50 +112,15 @@ const generateBoard = (board) => {
     }
 }
 
-// Move a tile to the blank position
-const moveTile = (tileId) => {
-    const currentTile = gameBoard.getTile(tileId);
-
-    if (gameBoard.checkNextToBlank(currentTile)) {
-        const blankTile = gameBoard.getTile(gameBoard.lastId);
-        const tilePos = currentTile.pos;
-
-        currentTile.setPosition(blankTile.pos);
-        blankTile.setPosition(tilePos);
-
-        document.querySelector("div#t" + currentTile.id).style.order = currentTile.pos;
-        document.querySelector("div#t" + blankTile.id).style.order = blankTile.pos;
-    }
-}
-
-// Handler for click event
-const handleTileClick = (event) => {
-    moveTile(event.currentTarget.id.slice(1));
-
-    if (gameBoard.checkVictory()) {
-        endGame();
-    }
-}
-
-// Instructions when game is completed
-const endGame = () => {
-    // TODO set victory display
-    console.log("Congratulations !");
-
-    blankTileElt.classList.remove("blank");
-
-    tilesElts.forEach(tileElt => tileElt.removeEventListener("click", handleTileClick));
-}
-
 // Start a new game :
 const startGame = (boardSize) => {
     const board = new Board(boardSize);
+
     generateBoard(board);
-    
-    tilesElts = document.querySelectorAll("div.tile:not(.blank)");
-    blankTileElt = document.querySelector("div.blank");
+    showOrder();
 
     tilesElts.forEach(tileElt => tileElt.addEventListener("click", handleTileClick));
+
     return board;
 }
 
